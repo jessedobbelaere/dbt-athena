@@ -224,6 +224,7 @@ class AthenaAdapter(SQLAdapter):
         conn = self.connections.get_thread_connection()
         client = conn.handle
 
+        print(":::Getting data catalog for db:" + relation.database)
         data_catalog = self._get_data_catalog(relation.database)
         catalog_id = get_catalog_id(data_catalog)
 
@@ -544,7 +545,9 @@ class AthenaAdapter(SQLAdapter):
                 return {"Name": database, "Type": "GLUE", "Parameters": {"catalog-id": catalog_id}}
             with boto3_client_lock:
                 athena = client.session.client("athena", region_name=client.region_name, config=get_boto3_config())
+            print(":::Querying athena for database" + database)
             return athena.get_data_catalog(Name=database)["DataCatalog"]
+        print(":::No database entered, returning None")
         return None
 
     @available
